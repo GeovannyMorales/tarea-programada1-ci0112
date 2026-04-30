@@ -1,33 +1,83 @@
 
 /**
- * Write a description of class carta here.
+ * Esta clase representa la carta del juego.
  * 
- * @author (your name) 
- * @version (a version number or a date)
+ * 
+ * @author Bryan Morales, Maria Vargas, José Rojas 
+ * @version 1.0
  */
-public class carta
+public class Carta
 {
-    // instance variables - replace the example below with your own
-    private int x;
-
+    private double vida;
+    private double ataque;
+    private double defensa;
+    private String tipo;
+    private Jugador jugador; //referencia al jugador
+    
     /**
-     * Constructor for objects of class carta
+     * Constructor defecto
      */
-    public carta()
+    public Carta()
     {
-        // initialise instance variables
-        x = 0;
+        this.tipo = asignarTipo();
+        this.vida = 1.0;
+        this.ataque = Math.random() * (1.0 - 0.6) + 0.6; //aleatorio entre 0.6 y 1.0
+        this.defensa = Math.random() * (0.5 - 0.1) + 0.1; //aleatorio entre 0.1 y 0.5
+        this.jugador = null;
     }
 
+    
     /**
-     * An example of a method - replace this comment with your own
+     * Escoge aleatoriamente un tipo de carta de un array con los diferentes tipos.
      * 
-     * @param  y   a sample parameter for a method
-     * @return     the sum of x and y 
+     * @return tipo de carta escogida aleatoriamente (agua, tierra o aire).
      */
-    public int sampleMethod(int y)
-    {
-        // put your code here
-        return x + y;
+    public String asignarTipo(){
+       String[] tiposCarta = {"Agua", "Aire", "Tierra"};
+
+       int i = (int) (Math.random() * tiposCarta.length); // generar un aleatorio entre 0 y 2 del array
+       return tiposCarta[i]; //retorna un tipo de carta
+    }
+    
+    // getters
+     public String getTipo(){
+        return tipo;
+    }
+    
+    public double getVida(){
+        return vida;
+    }
+    
+    public double getAtaque(){
+        return ataque;
+    }
+    
+    public double getDefensa(){
+        return defensa;
+    }
+    
+    public Jugador getJugador(){
+        return jugador;
+    }
+    
+    // setters
+    public void setTipo(String tipo){
+        this.tipo = tipo;
+    }
+    
+    public void setVida(double vida){
+        this.vida = vida;
+    }
+    
+    public void setAtaque(double ataque){
+        this.ataque = defensa;
+    }
+    
+    public void setDefensa(double defensa){
+        this.defensa = defensa;
+    }
+    
+    public void setJugador(Jugador jugador){
+        this.jugador = jugador;
     }
 }
