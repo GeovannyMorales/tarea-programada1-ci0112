@@ -19,7 +19,7 @@ public class Carta
      */
     public Carta()
     {
-        this.tipo = asignarTipo();
+        this.tipo = tipo;
         this.vida = 1.0;
         this.ataque = Math.random() * (1.0 - 0.6) + 0.6; //aleatorio entre 0.6 y 1.0
         this.defensa = Math.random() * (0.5 - 0.1) + 0.1; //aleatorio entre 0.1 y 0.5
@@ -32,11 +32,14 @@ public class Carta
      * 
      * @return tipo de carta escogida aleatoriamente (agua, tierra o aire).
      */
-    public String asignarTipo(){
-       String[] tiposCarta = {"Agua", "Aire", "Tierra"};
-
-       int i = (int) (Math.random() * tiposCarta.length); // generar un aleatorio entre 0 y 2 del array
+    public String asignarTipo(int i){
+       String[] tiposCarta = {"Agua", "Aire", "Tierra"}; 
        return tiposCarta[i]; //retorna un tipo de carta
+    }
+    
+    // toString para pruebas de impresion de datos
+    public String toString(){
+        return String.format(" tipo: %s, vida: %.1f, ataque: %.1f, defensa: %.1f", tipo, vida, ataque, defensa);
     }
     
     // getters
