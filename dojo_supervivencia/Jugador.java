@@ -9,6 +9,7 @@ public class Jugador
 {
     private Carta[] cartasJugador;
     private String nombre;
+    private boolean activo;
     
     /**
      * Constructor por defecto.
@@ -17,6 +18,7 @@ public class Jugador
     {
         this.cartasJugador = cartasJugador;
         this.nombre = nombre;
+        this.activo = activo;
     }
 
     /**
@@ -51,11 +53,26 @@ public class Jugador
         return "Nombre: " + nombre + datosJugador;
     }
     
-    
+    /**
+     * Metodo que verifica que el jugador actual sigue activo.
+     * 
+     * @return true, si al menos una de las cartas iteradas tiene vida mayor a 0.
+     * @return false, si las cartas tiene vida <= 0.|
+     */
+    public boolean estaActivo(){
+        for(int i = 0; i < cartasJugador.length; i++){
+            
+            if(cartasJugador[i].getVida() > 0){
+                return true;
+            }
+        }
+        return false;
+    }
     
     //metodo para ver si jugador sigue vivo?
     
     //setters
+    
     public void setNombre(String nombre){
         this.nombre = nombre;
     }
