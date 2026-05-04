@@ -7,18 +7,18 @@
  */
 public class Jugador
 {
-    private Carta[] cartasJugador;
     private String nombre;
+    private Carta[] cartasJugador;
     private boolean activo;
     
     /**
      * Constructor por defecto.
      */
-    public Jugador()
+    public Jugador(String nombre)
     {
-        this.cartasJugador = cartasJugador;
+        recibirCartas();
         this.nombre = nombre;
-        this.activo = activo;
+        this.activo = true;
     }
 
     /**
@@ -26,16 +26,16 @@ public class Jugador
      * 
      * 
      */
-    public void recibirCarta(){
-    
+    public void recibirCartas(){
+        String[] tiposCarta = {"Agua", "Aire", "Tierra"};
         cartasJugador = new Carta[3]; // "mazo" con 3 cartas para el jugador.
         
         for(int i = 0; i < cartasJugador.length; i++){
-            cartasJugador[i] = new Carta();
-            cartasJugador[i].setTipo(cartasJugador[i].asignarTipo(i)); // por cada iteracion recibe un tipo de carta diferente.
+            cartasJugador[i] = new Carta(tiposCarta[i]); // por cada iteracion recibe un tipo de carta diferente.
         }
     }
     
+
     /**
      * Metodo toString para imprimir datos del jugador(nombre y cartas asignadas).
      * 
@@ -62,18 +62,40 @@ public class Jugador
     public boolean estaActivo(){
         for(int i = 0; i < cartasJugador.length; i++){
             
-            if(cartasJugador[i].getVida() > 0){
+            if(cartasJugador[i].getVida() <= 0){
                 return true;
             }
         }
         return false;
     }
     
-    //metodo para ver si jugador sigue vivo?
+    
+    
+    
+    // getters
+    public Carta[] getCartaJugadores(){
+        return cartasJugador;
+    }
+    
+    public String getNombre(){
+        return nombre;
+    }
+    
+    public boolean getEstaActivo(){
+        return activo;
+    }
     
     //setters
     
     public void setNombre(String nombre){
         this.nombre = nombre;
+    }
+    
+    public void setCartasJugador(Carta[] nombre){
+        this.cartasJugador = cartasJugador;
+    }
+    
+    public void setActivo(boolean activo){
+        this.activo = activo;
     }
 }
