@@ -9,7 +9,6 @@ public class Jugador
 {
     private String nombre;
     private Carta[] cartasJugador;
-    private boolean activo;
     
     /**
      * Constructor por defecto.
@@ -18,7 +17,6 @@ public class Jugador
     {
         recibirCartas();
         this.nombre = nombre;
-        this.activo = true;
     }
 
     /**
@@ -59,7 +57,7 @@ public class Jugador
      * @return true, si al menos una de las cartas iteradas tiene vida mayor a 0.
      * @return false, si las cartas tiene vida <= 0.|
      */
-    public boolean estaActivo(){
+    public boolean esDerrotado(){
         for(int i = 0; i < cartasJugador.length; i++){
             
             if(cartasJugador[i].getVida() <= 0){
@@ -69,9 +67,6 @@ public class Jugador
         return false;
     }
     
-    
-    
-    
     // getters
     public Carta[] getCartaJugadores(){
         return cartasJugador;
@@ -79,10 +74,6 @@ public class Jugador
     
     public String getNombre(){
         return nombre;
-    }
-    
-    public boolean getEstaActivo(){
-        return activo;
     }
     
     //setters
@@ -95,7 +86,4 @@ public class Jugador
         this.cartasJugador = cartasJugador;
     }
     
-    public void setActivo(boolean activo){
-        this.activo = activo;
-    }
 }

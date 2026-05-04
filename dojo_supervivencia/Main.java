@@ -18,8 +18,8 @@ public class Main
        Jugador jugador1 = new Jugador(nombre1);
        
        
-       
-       
+       Oponente oponente1 = new Oponente(0.2);
+       System.out.println(oponente1.toString());
        
        System.out.println(jugador1.toString());
        
