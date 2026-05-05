@@ -1,32 +1,43 @@
-// clase del oponente
+/**
+ * Representa un oponente del juego.
+ * Cada oponente tiene tres cartas con tipos aleatorios y un nivel de intensidad
+ * que determina cuánta energía consume cada combo del equipo.
+ */
 public class Oponente {
 
-    private Carta[] cartasOponente;
+    private Carta[] cartas;
     private double intensidad;
 
+    /**
+     * Crea un oponente con la intensidad indicada y tres cartas aleatorias.
+     * @param intensidad el nivel de intensidad del oponente (0.2, 0.3 o 0.4)
+     */
     public Oponente(double intensidad) {
         this.intensidad = intensidad;
-        cartasAleatorio();
+        this.cartas = new Carta[3];
+        for (int i = 0; i < 3; i++) cartas[i] = new Carta();
     }
-    //genera cartas aleatorias para los jugadores
-    public void cartasAleatorio() {
-        String[] tipos = {"Agua", "Aire", "Tierra"};
-        cartasOponente = new Carta[3];
 
-        for (int i = 0; i < 3; i++) {
-            int r = (int) (Math.random() * 3);
-            cartasOponente[i] = new Carta(tipos[r]);
-        }
+    /**
+     * Reduce la intensidad del oponente a la mitad.
+     * Se llama cuando un jugador del equipo es derrotado.
+     */
+    public void reducirIntensidad() {
+        this.intensidad /= 2.0;
     }
-    // verifica si el oponente sigue vivo
+
+    /**
+     * Indica si el oponente fue derrotado (todas sus cartas están muertas).
+     * @return true si el oponente está derrotado
+     */
     public boolean estaDerrotado() {
-        for (Carta c : cartasOponente) {
-            if (!c.estaMuerta()) return false;
-        }
+        for (Carta c : cartas) if (!c.estaMuerta()) return false;
         return true;
     }
 
-    public double getIntensidad() { return intensidad; }
+    /** @return el arreglo de cartas del oponente */
+    public Carta[] getCartas() { return cartas; }
 
-    public Carta[] getCartas() { return cartasOponente; }
+    /** @return el nivel de intensidad actual del oponente */
+    public double getIntensidad() { return intensidad; }
 }
