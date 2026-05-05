@@ -10,14 +10,24 @@ public class Oponente
     private Carta[] cartasOponente;
     private double intensidad;
     
+    /**
+     *  Constructor con parametro
+     * 
+     * @param recibe un valor de intensidad, correspondiente al oponente.
+     */
     public Oponente(double intensidad){
         cartasAleatorio();
         this.intensidad = intensidad;
     }
     
+    /**
+     * Metodo que reparte cartas al oponente de manera aleatoria.
+     * recorre cada carta, asignando uno de los tipos aleatoriamente.
+     * 
+     */
     public void cartasAleatorio(){
         String[] tiposCarta = {"Agua", "Aire", "Tierra"};
-        cartasOponente = new Carta[3]; // "mazo" con 3 cartas para el jugador.
+        cartasOponente = new Carta[3]; // inicializar "mazo" con 3 cartas para el oponente.
         for(int i = 0 ; i < cartasOponente.length; i++){
             int aleatorio = (int) (Math.random() * tiposCarta.length);
             
@@ -25,13 +35,19 @@ public class Oponente
         }
     }
     
+    
+    /**
+     * Metodo que disminuye la intensidad del oponente.
+     * 
+     * @return la intensidad disminuida a la mitad.
+     */
     public double dismIntensidad(){
-        intensidad /= 2;
+        this.intensidad /= 2;
         return intensidad;
     }
     
     /**
-     * Metodo que verifica que el jugador actual sigue activo.
+     * Metodo que verifica que el oponente actual sigue activo.
      * 
      * @return true, si al menos una de las cartas iteradas tiene vida mayor a 0.
      * @return false, si las cartas tiene vida <= 0.|
@@ -46,6 +62,9 @@ public class Oponente
         return false;
     }
     
+    /**
+     * Imprimir datos
+     */
     public String toString(){
         String datosOponente = " ";
         int numCarta = 1; // etiqueta número de carta
@@ -63,9 +82,17 @@ public class Oponente
         return intensidad;
     }
     
+    
+    public Carta[] getCartasOponente(){
+        return cartasOponente;
+    }
+    
     //setters
     public void setIntensidad(double intensidad){
         this.intensidad = intensidad;
+    }
+    public void setCartasOponente(Carta[] cartasOponente){
+        this.cartasOponente = cartasOponente;
     }
 }
 

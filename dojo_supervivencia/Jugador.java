@@ -21,9 +21,8 @@ public class Jugador
 
     /**
      * Metodo que crea las cartas que obtendra el jugador
-     * 
-     * 
-     */
+     * recibe 3 cartas de un tipo diferente.
+     */ 
     public void recibirCartas(){
         String[] tiposCarta = {"Agua", "Aire", "Tierra"};
         cartasJugador = new Carta[3]; // "mazo" con 3 cartas para el jugador.
@@ -60,11 +59,11 @@ public class Jugador
     public boolean esDerrotado(){
         for(int i = 0; i < cartasJugador.length; i++){
             
-            if(cartasJugador[i].getVida() <= 0){
-                return true;
-            }
+            if(cartasJugador[i].getVida() > 0){
+                return false;
+            } 
         }
-        return false;
+        return true;
     }
     
     // getters
