@@ -1,290 +1,284 @@
-import java.util.Scanner;
-import javax.swing.JOptionPane;
-
+/**
+ * Clase principal que controla el flujo del juego.
+ * Maneja el menú, las partidas, los combos y el récord.
+ */
 public class Juego {
 
     private Jugador[] equipo;
     private Oponente oponente;
     private double energia;
     private int combosRealizados;
-
     private String nombreEquipo;
+
+    private Oponente[] historialOponentes;
+    private double[] historialIntensidades;
 
     private static Record mejorRecord = null;
 
-    private Scanner sc;
-    private boolean modoGUI;
+    private Interfaz ui;
 
-    public Juego(boolean modoGUI) {
-        this.modoGUI = modoGUI;
-        sc = new Scanner(System.in);
-        equipo = new Jugador[3];
+    /**
+     * Crea una instancia del juego con la interfaz indicada.
+     * @param ui la interfaz que se usará para comunicarse con el usuario
+     */
+    public Juego(Interfaz ui) {
+        this.ui = ui;
     }
 
-    public static void main(String[] args) {
-
-        boolean modoGUI = false;
-
-        if (args.length > 0 && args[0].equals("-gui")) {
-            modoGUI = true;
-        }
-
-        Juego juego = new Juego(modoGUI);
-        juego.menu();
-    }
-
-    private String leerTexto(String mensaje) {
-        if (modoGUI) {
-            return JOptionPane.showInputDialog(mensaje);
-        } else {
-            System.out.print(mensaje);
-            return sc.nextLine();
-        }
-    }
-
-    private int leerEntero(String mensaje) {
-        if (modoGUI) {
-            return Integer.parseInt(JOptionPane.showInputDialog(mensaje));
-        } else {
-            System.out.print(mensaje);
-            int num = sc.nextInt();
-            sc.nextLine();
-            return num;
-        }
-    }
-
-    private void mostrar(String mensaje) {
-        if (modoGUI) {
-            JOptionPane.showMessageDialog(null, mensaje);
-        } else {
-            System.out.println(mensaje);
-        }
-    }
-
-    public void menu() {
-
+    /**
+     * Muestra el menú principal y espera que el usuario elija una opción.
+     * El menú se repite hasta que el usuario decida salir.
+     */
+    public void menuPrincipal() {
         while (true) {
-
-            mostrar("\n DOJO DE SUPERVIVENCIA  \n1. Ver record\n2. Iniciar el juego\n3. Salir");
-
-            int opcion = leerEntero("Seleccione una opcion: ");
-
-            switch (opcion) {
-                case 1:
-                    mostrarRecord();
-                    break;
-                case 2:
-                    iniciar();
-                    break;
-                case 3:
-                    mostrar("Has salido");
-                    System.exit(0);
-                    break;
-            }
+            ui.mostrar(
+                "Bienvenido al Dojo de Supervivencia\n" +
+                "1. Ver el historial del mejor juego\n" +
+                "2. Iniciar una nueva partida\n" +
+                "3. Salir"
+            );
+            int op = ui.pedirOpcion("Seleccione", 3);
+            if (op == 1) mostrarRecord();
+            else if (op == 2) iniciarJuego();
+            else break;
         }
     }
 
+    /**
+     * Muestra el mejor récord registrado en la sesión actual.
+     * Si no hay récord todavía, informa al usuario.
+     */
     private void mostrarRecord() {
-        if (mejorRecord != null) {
-            mejorRecord.mostrar();
-        } else {
-            mostrar("No existe record");
+        if (mejorRecord != null) mejorRecord.mostrar(ui);
+        else ui.mostrar("No hay récord registrado todavía.");
+    }
+
+    /**
+     * Actualiza el récord si el resultado actual es mejor que el anterior.
+     * @param oponentesDerrotados cantidad de oponentes derrotados en la partida
+     */
+    private void actualizarRecord(int oponentesDerrotados) {
+        int activos = 0;
+        for (Jugador j : equipo) if (j.estaActivo()) activos++;
+        Record nuevo = new Record(nombreEquipo, oponentesDerrotados, activos, combosRealizados);
+        if (nuevo.esMejorQue(mejorRecord)) {
+            mejorRecord = nuevo;
+            ui.mostrar("¡Nuevo récord registrado para el equipo " + nombreEquipo + "!");
         }
     }
 
-    public void iniciar() {
-
+    /**
+     * Inicia una nueva partida: pide los nombres del equipo y jugadores,
+     * asigna las cartas y enfrenta al equipo contra los tres oponentes.
+     */
+    private void iniciarJuego() {
         combosRealizados = 0;
+        equipo = new Jugador[3];
+        historialOponentes = new Oponente[3];
+        historialIntensidades = new double[]{0.2, 0.3, 0.4};
 
-        nombreEquipo = leerTexto("¿Como se llama tu equipo? ");
-
+        nombreEquipo = ui.pedirTexto("Nombre del equipo");
         for (int i = 0; i < 3; i++) {
-            String nombre = leerTexto("Jugador " + (i + 1) + ": ");
+            String nombre = ui.pedirTexto("Nombre del jugador " + (i + 1));
             equipo[i] = new Jugador(nombre);
         }
 
-        int oponentesDerrotados = 0;
+        StringBuilder sb = new StringBuilder("Cartas asignadas:\n");
+        for (Jugador j : equipo)
+            sb.append("  ").append(j.getNombre()).append(": Aire, Tierra, Agua\n");
+        ui.mostrar(sb.toString());
 
-        for (int i = 1; i <= 3; i++) {
-
-            mostrar("\n--- Oponente " + i + " ---");
-
-            double intensidad = obtenerIntensidad(i);
-            oponente = new Oponente(intensidad);
-
+        int derrotados = 0;
+        for (int i = 0; i < 3; i++) {
+            oponente = new Oponente(historialIntensidades[i]);
+            historialOponentes[i] = oponente;
             energia = 1.0;
 
-            boolean ganado = pelear();
-
-            if (!ganado) {
-                mostrar("Has perdido contra el " + i + " oponente");
-                actualizarRecord(oponentesDerrotados);
+            if (!pelear(i + 1)) {
+                ui.mostrar("El equipo " + nombreEquipo + " fue derrotado en el oponente " + (i + 1) + ".");
+                actualizarRecord(derrotados);
+                mostrarResumenFinal(derrotados);
                 return;
             }
-
-            oponentesDerrotados++;
+            derrotados++;
+            ui.mostrar("¡Oponente " + (i + 1) + " derrotado!");
         }
 
-        mostrar("¡Completaste el juego!");
-        actualizarRecord(oponentesDerrotados);
+        ui.mostrar("¡El equipo " + nombreEquipo + " ha ganado el Dojo!");
+        actualizarRecord(derrotados);
+        mostrarResumenFinal(derrotados);
     }
 
-    private double obtenerIntensidad(int n) {
-        if (n == 1) return 0.2;
-        if (n == 2) return 0.3;
-        return 0.4;
-    }
+    /**
+     * Lleva a cabo el combate contra un oponente.
+     * El equipo realiza combos hasta derrotar al oponente, quedarse sin energía
+     * o decidir abandonar.
+     * @param numeroOponente el número del oponente actual (1, 2 o 3)
+     * @return true si el oponente fue derrotado, false si el equipo perdió o abandonó
+     */
+    private boolean pelear(int numeroOponente) {
+        boolean[] estabaActivo = estadoActivos();
 
-    private boolean pelear() {
+        while (true) {
+            if (energia <= 0) {
+                ui.mostrar("Se agotó la energía.");
+                return false;
+            }
+            if (!hayJugadoresActivos()) {
+                ui.mostrar("Todo el equipo fue derrotado.");
+                return false;
+            }
 
-        while (energia > 0) {
+            mostrarEstadoPartida(numeroOponente);
 
-            mostrarEstado();
+            ui.mostrar("1. Realizar un combo\n2. Abandonar el juego");
+            int op = ui.pedirOpcion("Seleccione", 2);
+            if (op == 2) return false;
 
-            int opcion = leerEntero("1. Hacer combo\n2. Abandonar");
+            Carta[] cartasCombo = seleccionarCartasCombo();
+            if (cartasCombo == null) continue;
 
-            if (opcion == 2) return false;
+            int ataques = ui.pedirEnteroPositivo("Cantidad de ataques para el combo");
 
-            Carta[] cartasEquipo = seleccionarCartas();
-            Carta[] cartasOponente = oponente.getCartas();
-
-            int ataques = leerEntero("Cantidad de ataques: ");
-
-            Combo combo = new Combo(cartasEquipo, cartasOponente, ataques);
-
+            Combo combo = new Combo(cartasCombo, oponente.getCartas(), ataques);
             if (!combo.esValido(equipo)) {
-                mostrar("Combo invalido");
+                ui.mostrar("Combo inválido: cada jugador activo debe aportar al menos una carta viva.");
                 continue;
             }
 
             combo.ejecutar();
             combosRealizados++;
 
+            for (int i = 0; i < equipo.length; i++) {
+                if (estabaActivo[i] && !equipo[i].estaActivo()) {
+                    ui.mostrar(equipo[i].getNombre() + " fue derrotado. La intensidad del oponente se reduce a la mitad.");
+                    oponente.reducirIntensidad();
+                }
+            }
+            estabaActivo = estadoActivos();
+
             energia -= oponente.getIntensidad();
+            if (energia < 0) energia = 0;
 
-            if (oponente.estaDerrotado()) {
-                mostrar("Oponente derrotado");
-                return true;
-            }
-
-            if (!hayJugadoresActivos()) {
-                return false;
-            }
+            if (oponente.estaDerrotado()) return true;
         }
-
-        return false;
     }
 
-    private Carta[] seleccionarCartas() {
+    /**
+     * Permite al usuario seleccionar las tres cartas del equipo para un combo.
+     * Cada posición corresponde a una carta del oponente.
+     * @return el arreglo de cartas seleccionadas
+     */
+    private Carta[] seleccionarCartasCombo() {
+        Carta[] sel = new Carta[3];
+        ui.mostrar("Seleccione una carta del equipo para cada posición del oponente.");
 
-        Carta[] seleccion = new Carta[3];
-
-        for (int i = 0; i < 3; i++) {
-
+        for (int pos = 0; pos < 3; pos++) {
+            ui.mostrar("-- Posición " + (pos + 1) + " --");
             while (true) {
+                StringBuilder opciones = new StringBuilder("Jugadores activos:\n");
+                for (int i = 0; i < equipo.length; i++)
+                    if (equipo[i].estaActivo())
+                        opciones.append("  ").append(i + 1).append(". ").append(equipo[i].getNombre()).append("\n");
+                ui.mostrar(opciones.toString());
 
-                int jugadorIndex = leerEntero("Seleccion carta " + (i + 1) + "\nJugador (1-3): ") - 1;
-
-                if (jugadorIndex < 0 || jugadorIndex > 2) {
-                    mostrar("Jugador invalido");
+                int jIdx = ui.pedirOpcion("Número de jugador", 3) - 1;
+                if (!equipo[jIdx].estaActivo()) {
+                    ui.mostrar("Ese jugador está derrotado.");
                     continue;
                 }
 
-                Jugador jugador = equipo[jugadorIndex];
+                ui.mostrar("Tipo de carta: 1=Aire  2=Tierra  3=Agua");
+                int tIdx = ui.pedirOpcion("Tipo", 3);
+                String tipo = (tIdx == 1) ? "Aire" : (tIdx == 2) ? "Tierra" : "Agua";
 
-                if (!jugador.estaActivo()) {
-                    mostrar("Ese jugador esta derrotado");
+                Carta c = equipo[jIdx].getCartaPorTipo(tipo);
+                if (c == null) {
+                    ui.mostrar("Esa carta está muerta o no existe.");
+                    continue;
+                }
+                if (yaSeleccionada(sel, c)) {
+                    ui.mostrar("Esa carta ya fue seleccionada.");
                     continue;
                 }
 
-                int opcion = leerEntero("Tipo: 1=Aire  2=Tierra  3=Agua");
-
-                String tipo = "";
-                if (opcion == 1) tipo = "Aire";
-                else if (opcion == 2) tipo = "Tierra";
-                else if (opcion == 3) tipo = "Agua";
-                else {
-                    mostrar("Tipo invalido");
-                    continue;
-                }
-
-                Carta carta = jugador.getCartaPorTipo(tipo);
-
-                if (carta == null || carta.estaMuerta()) {
-                    mostrar("Carta no disponible");
-                    continue;
-                }
-
-                if (yaSeleccionada(seleccion, carta)) {
-                    mostrar("Carta repetida");
-                    continue;
-                }
-
-                seleccion[i] = carta;
+                sel[pos] = c;
                 break;
             }
         }
-
-        return seleccion;
+        return sel;
     }
 
-    private boolean yaSeleccionada(Carta[] seleccion, Carta carta) {
-        for (Carta c : seleccion) {
-            if (c == carta) return true;
-        }
-        return false;
-    }
-
-    private boolean hayJugadoresActivos() {
-        for (Jugador j : equipo) {
-            if (j.estaActivo()) return true;
-        }
-        return false;
-    }
-
-    private void mostrarEstado() {
-
-        String estado = "\nESTADO\n";
-        estado += "Energia: " + String.format("%.2f", energia) + "\n";
-        estado += "Intensidad: " + String.format("%.2f", oponente.getIntensidad()) + "\n";
-        estado += "Combos hechos: " + combosRealizados + "\n\n";
-
-        for (Jugador j : equipo) {
-            estado += j.toString() + "\n";
-        }
-
-        estado += "\nOPONENTE\n";
-
-        Carta[] cartasOp = oponente.getCartas();
-
-        for (int i = 0; i < cartasOp.length; i++) {
-            estado += "Carta " + (i + 1) +
-                      " Vida: " + String.format("%.2f", cartasOp[i].getVida()) + "\n";
-        }
-
-        mostrar(estado);
-    }
-
-    private void actualizarRecord(int oponentesDerrotados) {
-
-        int jugadoresActivos = 0;
-
-        for (Jugador j : equipo) {
-            if (j.estaActivo()) {
-                jugadoresActivos++;
-            }
-        }
-
-        Record nuevo = new Record(
-            nombreEquipo,
-            oponentesDerrotados,
-            jugadoresActivos,
-            combosRealizados
+    /**
+     * Muestra el resumen final de la partida con los atributos completos
+     * de todas las cartas del equipo y los oponentes enfrentados.
+     * @param derrotados cantidad de oponentes derrotados
+     */
+    private void mostrarResumenFinal(int derrotados) {
+        ui.mostrar(
+            "=== FIN DE LA PARTIDA ===\n" +
+            "Equipo: " + nombreEquipo + "\n" +
+            "Oponentes derrotados: " + derrotados + "/3\n" +
+            "Combos realizados: " + combosRealizados
         );
 
-        if (nuevo.esMejorQue(mejorRecord)) {
-            mejorRecord = nuevo;
-            mostrar("¡NUEVO RECORD!");
+        ui.mostrar("--- Atributos de TU EQUIPO ---");
+        for (Jugador j : equipo) j.mostrarEstadoCompleto(ui);
+
+        ui.mostrar("--- Atributos de los OPONENTES ---");
+        for (int i = 0; i < historialOponentes.length; i++) {
+            if (historialOponentes[i] == null) break;
+            ui.mostrar("Oponente " + (i + 1) + " (intensidad original: " + historialIntensidades[i] + "):");
+            for (Carta c : historialOponentes[i].getCartas())
+                ui.mostrar("    " + c.toString());
         }
+    }
+
+    /**
+     * Muestra el estado actual de la partida: oponente, energía, combos y vida del equipo.
+     * No muestra los atributos completos de las cartas, solo la vida.
+     * @param numeroOponente el número del oponente actual
+     */
+    private void mostrarEstadoPartida(int numeroOponente) {
+        ui.mostrar(String.format(
+            "Oponente: %d  Intensidad: %.1f%%  Energía disponible: %.1f%%\n" +
+            "Combos realizados: %d\nEquipo: %s",
+            numeroOponente,
+            oponente.getIntensidad() * 100,
+            energia * 100,
+            combosRealizados,
+            nombreEquipo));
+        for (Jugador j : equipo) j.mostrarEstadoJuego(ui);
+    }
+
+    /**
+     * Indica si hay al menos un jugador activo en el equipo.
+     * @return true si al menos un jugador sigue activo
+     */
+    private boolean hayJugadoresActivos() {
+        for (Jugador j : equipo) if (j.estaActivo()) return true;
+        return false;
+    }
+
+    /**
+     * Devuelve un arreglo con el estado activo de cada jugador en ese momento.
+     * Se usa para detectar quién fue derrotado después de un combo.
+     * @return arreglo de booleanos con true si el jugador estaba activo
+     */
+    private boolean[] estadoActivos() {
+        boolean[] estado = new boolean[equipo.length];
+        for (int i = 0; i < equipo.length; i++) estado[i] = equipo[i].estaActivo();
+        return estado;
+    }
+
+    /**
+     * Verifica si una carta ya fue seleccionada para el combo actual.
+     * @param arr el arreglo de cartas ya seleccionadas
+     * @param c la carta que se quiere verificar
+     * @return true si la carta ya fue seleccionada
+     */
+    private boolean yaSeleccionada(Carta[] arr, Carta c) {
+        for (Carta x : arr) if (x == c) return true;
+        return false;
     }
 }
