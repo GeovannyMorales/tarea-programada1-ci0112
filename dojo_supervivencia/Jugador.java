@@ -1,50 +1,71 @@
-// clase que representa al jugador
+/**
+ * Representa un jugador del equipo.
+ * Cada jugador tiene tres cartas: Aire, Tierra y Agua.
+ */
 public class Jugador {
 
     private String nombre;
-    private Carta[] cartasJugador;
+    private Carta[] cartas;
 
+    /**
+     * Crea un jugador con su nombre y le asigna tres cartas (Aire, Tierra, Agua).
+     * @param nombre el nombre del jugador
+     */
     public Jugador(String nombre) {
         this.nombre = nombre;
-        recibirCartas();
+        this.cartas = new Carta[3];
+
+        cartas[0] = new Carta("Aire");
+        cartas[1] = new Carta("Tierra");
+        cartas[2] = new Carta("Agua");
+
+        for (Carta c : cartas) c.setJugador(this);
     }
 
-    // crea las cartas del jugador
-    public void recibirCartas() {
-        String[] tipos = {"Aire", "Tierra", "Agua"};
-        cartasJugador = new Carta[3];
-
-        for (int i = 0; i < 3; i++) {
-            cartasJugador[i] = new Carta(tipos[i]);
-            cartasJugador[i].setJugador(this);
-        }
-    }
-
-    // verifica si sigue activo
+    /**
+     * Indica si el jugador sigue activo (tiene al menos una carta viva).
+     * @return true si el jugador está activo
+     */
     public boolean estaActivo() {
-        for (Carta c : cartasJugador) {
-            if (!c.estaMuerta()) return true;
-        }
+        for (Carta c : cartas) if (!c.estaMuerta()) return true;
         return false;
     }
 
-    // obtiene carta por tipo
+    /**
+     * Devuelve la carta del tipo indicado si existe y está viva.
+     * @param tipo el tipo de carta buscada
+     * @return la carta si existe y está viva, null si no
+     */
     public Carta getCartaPorTipo(String tipo) {
-        for (Carta c : cartasJugador) {
-            if (c.getTipo().equals(tipo)) return c;
-        }
+        for (Carta c : cartas)
+            if (c.getTipo().equals(tipo) && !c.estaMuerta()) return c;
         return null;
     }
 
-    // muestra estado del jugador
-    public void mostrarEstado() {
-        System.out.println("Jugador: " + nombre + " | Estado: " + (estaActivo() ? "Activo" : "Derrotado"));
-
-        for (Carta c : cartasJugador) {
-            System.out.println(" - " + c.getTipo() + " | Vida: " + String.format("%.2f", c.getVida()));
-        }
+    /**
+     * Muestra el estado del jugador durante el juego (solo vida de sus cartas).
+     * @param ui la interfaz que se usa para mostrar el mensaje
+     */
+    public void mostrarEstadoJuego(Interfaz ui) {
+        ui.mostrar(String.format("  %s | %s", nombre, estaActivo() ? "Activo" : "Derrotado"));
+        ui.mostrar(String.format("    Vida: Aire %.1f%%  Tierra %.1f%%  Agua %.1f%%",
+                cartas[0].getVida() * 100,
+                cartas[1].getVida() * 100,
+                cartas[2].getVida() * 100));
     }
 
-    public Carta[] getCartaJugadores() { return cartasJugador; }
+    /**
+     * Muestra el estado completo del jugador al final del juego (ataque y defensa incluidos).
+     * @param ui la interfaz que se usa para mostrar el mensaje
+     */
+    public void mostrarEstadoCompleto(Interfaz ui) {
+        ui.mostrar(String.format("  Jugador: %s | %s", nombre, estaActivo() ? "Activo" : "Derrotado"));
+        for (Carta c : cartas) ui.mostrar("    " + c.toString());
+    }
+
+    /** @return el arreglo de cartas del jugador */
+    public Carta[] getCartas() { return cartas; }
+
+    /** @return el nombre del jugador */
     public String getNombre() { return nombre; }
 }
