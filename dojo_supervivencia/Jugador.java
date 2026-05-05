@@ -1,88 +1,50 @@
+// clase que representa al jugador
+public class Jugador {
 
-/**
- * Clase que corresponde al jugador
- * 
- * @author Bryan Morales, Maria Vargas, José Rojas
- * @version 1.0
- */
-public class Jugador
-{
     private String nombre;
     private Carta[] cartasJugador;
-    
-    /**
-     * Constructor por defecto.
-     */
-    public Jugador(String nombre)
-    {
+
+    public Jugador(String nombre) {
+        this.nombre = nombre;
         recibirCartas();
-        this.nombre = nombre;
     }
 
-    /**
-     * Metodo que crea las cartas que obtendra el jugador
-     * recibe 3 cartas de un tipo diferente.
-     */ 
-    public void recibirCartas(){
-        String[] tiposCarta = {"Agua", "Aire", "Tierra"};
-        cartasJugador = new Carta[3]; // "mazo" con 3 cartas para el jugador.
-        
-        for(int i = 0; i < cartasJugador.length; i++){
-            cartasJugador[i] = new Carta(tiposCarta[i]); // por cada iteracion recibe un tipo de carta diferente.
-        }
-    }
-    
+    // crea las cartas del jugador
+    public void recibirCartas() {
+        String[] tipos = {"Aire", "Tierra", "Agua"};
+        cartasJugador = new Carta[3];
 
-    /**
-     * Metodo toString para imprimir datos del jugador(nombre y cartas asignadas).
-     * 
-     * @return un string con el nombre del jugador y la información de sus cartas.
-     */
-    public String toString(){
-        String datosJugador = " ";
-        int numCarta = 1; // etiqueta número de carta
-        
-        for(int i = 0; i < cartasJugador.length; i++){
-            datosJugador += "\nCarta N°: " + numCarta + cartasJugador[i].toString();
-            numCarta += 1;
+        for (int i = 0; i < 3; i++) {
+            cartasJugador[i] = new Carta(tipos[i]);
+            cartasJugador[i].setJugador(this);
         }
-        
-        return "Nombre: " + nombre + datosJugador;
     }
-    
-    /**
-     * Metodo que verifica que el jugador actual sigue activo.
-     * 
-     * @return true, si al menos una de las cartas iteradas tiene vida mayor a 0.
-     * @return false, si las cartas tiene vida <= 0.|
-     */
-    public boolean esDerrotado(){
-        for(int i = 0; i < cartasJugador.length; i++){
-            
-            if(cartasJugador[i].getVida() > 0){
-                return false;
-            } 
+
+    // verifica si sigue activo
+    public boolean estaActivo() {
+        for (Carta c : cartasJugador) {
+            if (!c.estaMuerta()) return true;
         }
-        return true;
+        return false;
     }
-    
-    // getters
-    public Carta[] getCartaJugadores(){
-        return cartasJugador;
+
+    // obtiene carta por tipo
+    public Carta getCartaPorTipo(String tipo) {
+        for (Carta c : cartasJugador) {
+            if (c.getTipo().equals(tipo)) return c;
+        }
+        return null;
     }
-    
-    public String getNombre(){
-        return nombre;
+
+    // muestra estado del jugador
+    public void mostrarEstado() {
+        System.out.println("Jugador: " + nombre + " | Estado: " + (estaActivo() ? "Activo" : "Derrotado"));
+
+        for (Carta c : cartasJugador) {
+            System.out.println(" - " + c.getTipo() + " | Vida: " + String.format("%.2f", c.getVida()));
+        }
     }
-    
-    //setters
-    
-    public void setNombre(String nombre){
-        this.nombre = nombre;
-    }
-    
-    public void setCartasJugador(Carta[] nombre){
-        this.cartasJugador = cartasJugador;
-    }
-    
+
+    public Carta[] getCartaJugadores() { return cartasJugador; }
+    public String getNombre() { return nombre; }
 }
