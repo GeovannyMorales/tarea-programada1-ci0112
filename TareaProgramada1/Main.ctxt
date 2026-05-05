@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=Main
+comment0.text=\n\ Punto\ de\ entrada\ del\ programa.\n\ Decide\ si\ usar\ interfaz\ de\ consola\ o\ gr\u00E1fica\ seg\u00FAn\ el\ par\u00E1metro\ recibido.\n\n\ Uso\:\n\ \ \ java\ Main\ \ \ \ \ \ \ \ \ \ \ \ -\ modo\ consola\ (por\ defecto)\n\ \ \ java\ Main\ -consola\ \ \ -\ modo\ consola\n\ \ \ java\ Main\ -gui\ \ \ \ \ \ \ -\ modo\ gr\u00E1fico\ (JOptionPane)\n
+comment1.params=args
+comment1.target=void\ main(java.lang.String[])
+comment1.text=\n\ M\u00E9todo\ principal\ que\ inicia\ el\ juego.\n\ @param\ args\ par\u00E1metros\ de\ l\u00EDnea\ de\ comandos\ (-gui\ o\ -consola)\n
+numComments=2
