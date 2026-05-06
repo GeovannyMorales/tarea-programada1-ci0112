@@ -22,10 +22,10 @@ public class Combo {
     }
 
     /**
-     * Ejecuta el combo enfrentando cada carta del equipo contra su carta oponente
-     * la cantidad de ataques indicada.
+     * Ejecuta el combo enfrentando cada carta del equipo contra una carta del oponente segun la cantidad de ataques.
+     * 
      */
-    public void ejecutar() {
+    public void enfrentar() {
         for (int ataque = 0; ataque < cantidadAtaques; ataque++) {
             for (int j = 0; j < 3; j++) {
                 Carta cEquipo = cartasEquipo[j];
@@ -38,22 +38,39 @@ public class Combo {
     }
 
     /**
-     * Valida que el combo sea válido.
-     * Para ser válido, las tres cartas deben existir y estar vivas,
+     * Validar que el combo sea válido.
+     * Es válido, si las tres cartas existen y tienen vida,
      * y cada jugador activo debe aportar al menos una carta.
      * @param equipo el arreglo de jugadores del equipo
      * @return true si el combo es válido
      */
     public boolean esValido(Jugador[] equipo) {
-        for (Carta c : cartasEquipo)
-            if (c == null || c.estaMuerta()) return false;
 
+        // Verifica que las cartas existan y tengan vida
+        for (Carta c : cartasEquipo) {
+            if (c == null || c.estaMuerta()) {
+                return false;
+            }
+        }
+
+        // Verifica que cada jugador activo tenga al menos una carta en el equipo
         for (Jugador j : equipo) {
-            if (!j.estaActivo()) continue;
+
+            if (!j.estaActivo()) {
+                continue;
+            }
+            
             boolean aporta = false;
-            for (Carta c : cartasEquipo)
-                if (c.getJugador() == j) { aporta = true; break; }
-            if (!aporta) return false;
+            for (Carta c : cartasEquipo) {
+                if (c.getJugador() == j) {
+                    aporta = true;
+                    break;
+                }
+            }
+
+            if (!aporta) {
+                return false;
+            }
         }
         return true;
     }

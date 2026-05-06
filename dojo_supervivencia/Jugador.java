@@ -19,15 +19,22 @@ public class Jugador {
         cartas[1] = new Carta("Tierra");
         cartas[2] = new Carta("Agua");
 
-        for (Carta c : cartas) c.setJugador(this);
+        for (Carta c : cartas) {
+            c.setJugador(this);
+        }    
     }
-
+    
     /**
      * Indica si el jugador sigue activo (tiene al menos una carta viva).
      * @return true si el jugador está activo
+     * @return false si no lo está
      */
     public boolean estaActivo() {
-        for (Carta c : cartas) if (!c.estaMuerta()) return true;
+        for (Carta c : cartas){
+            if (!c.estaMuerta()){
+                return true;
+            }    
+        }    
         return false;
     }
 
@@ -37,14 +44,17 @@ public class Jugador {
      * @return la carta si existe y está viva, null si no
      */
     public Carta getCartaPorTipo(String tipo) {
-        for (Carta c : cartas)
-            if (c.getTipo().equals(tipo) && !c.estaMuerta()) return c;
+        for (Carta c : cartas){
+            if (c.getTipo().equals(tipo) && !c.estaMuerta()){
+                return c;
+            }    
+        }
         return null;
     }
 
     /**
      * Muestra el estado del jugador durante el juego (solo vida de sus cartas).
-     * @param ui la interfaz que se usa para mostrar el mensaje
+     * @param ui la interfaz que se usa para mostrar el mensaje.
      */
     public void mostrarEstadoJuego(Interfaz ui) {
         ui.mostrar(String.format("  %s | %s", nombre, estaActivo() ? "Activo" : "Derrotado"));
@@ -60,12 +70,18 @@ public class Jugador {
      */
     public void mostrarEstadoCompleto(Interfaz ui) {
         ui.mostrar(String.format("  Jugador: %s | %s", nombre, estaActivo() ? "Activo" : "Derrotado"));
-        for (Carta c : cartas) ui.mostrar("    " + c.toString());
+        for (Carta c : cartas){
+            ui.mostrar("    " + c.toString());
+        }    
     }
 
-    /** @return el arreglo de cartas del jugador */
-    public Carta[] getCartas() { return cartas; }
+    /** @return el arreglo de cartas del jugador /getter */
+    public Carta[] getCartas() { 
+        return cartas;
+    }
 
-    /** @return el nombre del jugador */
-    public String getNombre() { return nombre; }
+    /** @return el nombre del jugador/getter */
+    public String getNombre() {
+        return nombre; 
+        }
 }

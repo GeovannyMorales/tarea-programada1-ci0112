@@ -15,29 +15,42 @@ public class Oponente {
     public Oponente(double intensidad) {
         this.intensidad = intensidad;
         this.cartas = new Carta[3];
-        for (int i = 0; i < 3; i++) cartas[i] = new Carta();
+        for (int i = 0; i < 3; i++) {
+            cartas[i] = new Carta();
+        }    
     }
 
     /**
      * Reduce la intensidad del oponente a la mitad.
-     * Se llama cuando un jugador del equipo es derrotado.
      */
     public void reducirIntensidad() {
         this.intensidad /= 2.0;
     }
 
     /**
-     * Indica si el oponente fue derrotado (todas sus cartas están muertas).
+     * Indica si el oponente fue derrotado (todas sus cartas no tienen vida).
      * @return true si el oponente está derrotado
      */
     public boolean estaDerrotado() {
-        for (Carta c : cartas) if (!c.estaMuerta()) return false;
+        for (Carta c : cartas){
+            if (!c.estaMuerta()){
+                return false;
+            }    
+        }
         return true;
     }
 
-    /** @return el arreglo de cartas del oponente */
-    public Carta[] getCartas() { return cartas; }
+    /** 
+     * @return el arreglo de cartas del oponente
+     */
+    public Carta[] getCartas() {
+        return cartas;
+    }
 
-    /** @return el nivel de intensidad actual del oponente */
-    public double getIntensidad() { return intensidad; }
+    /**
+     * @return el nivel de intensidad actual del oponente
+     */
+    public double getIntensidad() {
+        return intensidad;
+    }
 }

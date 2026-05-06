@@ -146,7 +146,7 @@ public class Juego {
                 continue;
             }
 
-            combo.ejecutar();
+            combo.enfrentar();
             combosRealizados++;
 
             for (int i = 0; i < equipo.length; i++) {
